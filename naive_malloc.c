@@ -1,5 +1,4 @@
 #include "malloc.h"
-#define ALIGNMENT(size) (size + (8 - (size % 8)))
 
 /**
  * first_time - First routine to create pagiante

@@ -73,8 +73,6 @@ void *new_block(void *ptr, size_t *len, size_t block, ssize_t page)
 void *_malloc(size_t size)
 {
 	void *ptr;
-	static void *first_chunk;
-	static size_t len;
 	block_t *tmp_block;
 	size_t block = ALIGNMENT(size) + sizeof(block_t) + sizeof(size);
 	size_t i, block_size, flag = 0;

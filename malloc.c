@@ -29,18 +29,17 @@ void *first_time(ssize_t *page)
 /**
  * new_block - Allocate new pages on the heap
  * @ptr:   Pointer to allocated page
- * @len:   Number of pointers
  * @block: size of block to allocate
  * @page:  Value of page
  *
  * Return: Pointer to allocated page
  */
-void *new_block(void *ptr, size_t *len, size_t block, ssize_t page)
+void *new_block(void *ptr, size_t block, ssize_t page)
 {
 	void *next_block;
 	size_t tmp = 0;
 
-	tmp = *len ? *(size_t *)ptr : (size_t)page;
+	tmp = len ? *(size_t *)ptr : (size_t)page;
 	next_block = ((char *)ptr) + block;
 	while (tmp < block)
 	{
@@ -98,7 +97,7 @@ void *_malloc(size_t size)
 		ptr = (char *)ptr + block_size;
 	}
 	if (!flag)
-		ptr = new_block(ptr, &len, block, page);
+		ptr = new_block(ptr, block, page);
 	tmp_block = (block_t *)ptr;
 	tmp_block->start = first_chunk;
 	tmp_block->used = 1;

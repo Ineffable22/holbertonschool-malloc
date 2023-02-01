@@ -5,9 +5,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/param.h>
 
 #define ALIGNMENT(size) (size + (8 - (size % 8)))
+#define MIN(x, y) (y ^ ((x ^ y) & -(x < y)))
 
 /**
  * struct block_s - struct block

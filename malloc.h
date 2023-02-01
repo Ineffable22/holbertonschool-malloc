@@ -20,6 +20,9 @@ typedef struct block_s
 	char           used;
 } block_t;
 
+void *first_chunk;
+size_t len;
+
 /* ----- naive_malloc.c ----- */
 void *naive_malloc(size_t size);
 

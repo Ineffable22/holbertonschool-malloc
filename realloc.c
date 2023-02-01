@@ -2,33 +2,33 @@
 
 /**
  * _realloc - reallocates a memory block using malloc and free
- * @ptr:      Is a pointer to the memory space to resize
- * @new_size: Is the new size needed to be allocated for the user
+ * @ptr:  Is a pointer to the memory space to resize
+ * @size: Is the new size needed to be allocated for the user
  *
  * Return: pointer to the newly allocated memory block
  */
-void *_realloc(void *ptr, size_t new_size)
+void *_realloc(void *ptr, size_t size)
 {
 	char *new_ptr = NULL;
-	size_t size = 0;
+	size_t old_size = 0;
 
 	if (ptr == NULL)
-		return (_malloc(new_size));
-	size = *(size_t *)((char *)ptr + sizeof(block_t));
-	if (new_size == 0)
+		return (_malloc(size));
+	old_size = *(size_t *)((char *)ptr + sizeof(block_t));
+	if (size == 0)
 	{
 		_free(ptr);
 		return (NULL);
 	}
 
-	if (size == ALIGNMENT(new_size) + sizeof(block_t) + sizeof(size_t))
+	if (old_size == ALIGNMENT(size) + sizeof(block_t) + sizeof(size_t))
 		return (ptr);
 
-	new_ptr = _malloc(new_size);
+	new_ptr = _malloc(size);
 	if (!new_ptr)
 		return (NULL);
 
-	memcpy(new_ptr, ptr, MIN(size, new_size));
+	memcpy(new_ptr, ptr, MIN(old_size, size));
 	_free(ptr);
 	return (new_ptr);
 }

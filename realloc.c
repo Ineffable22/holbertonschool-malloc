@@ -10,11 +10,11 @@
 void *_realloc(void *ptr, size_t new_size)
 {
 	char *new_ptr = NULL;
-	size_t size = *(size_t *)((char *)ptr + sizeof(block_t));
+	size_t size = 0;
 
 	if (ptr == NULL)
 		return (_malloc(new_size));
-
+	size = *(size_t *)((char *)ptr + sizeof(block_t));
 	if (new_size == 0)
 	{
 		_free(ptr);

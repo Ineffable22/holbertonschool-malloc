@@ -12,7 +12,7 @@ void *_realloc(void *ptr, size_t size)
 	char *new_ptr = NULL;
 	size_t old_size = 0;
 
-	if (ptr == NULL)
+	if (ptr == NULL || len == 0)
 		return (_malloc(size));
 	old_size = *(size_t *)((char *)ptr + sizeof(block_t));
 	if (size == 0)

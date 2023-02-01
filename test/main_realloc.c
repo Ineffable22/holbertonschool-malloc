@@ -7,7 +7,7 @@
  */
 int str_test(void)
 {
-	char *str = NULL;
+	char *str;
 	int i;
 
 	printf("==========String allocation test==========\n");

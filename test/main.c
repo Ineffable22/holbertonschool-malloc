@@ -30,7 +30,6 @@ int str_test(void)
 		printf("start: %p, ", block->start);
 		printf("used: %d, ", block->used);
 		printf("break: %p\n", sbrk(0));
-		//pmem(block, 40);
 	}
 	printf("Final break is %p\n\n", sbrk(0));
 	return (EXIT_SUCCESS);

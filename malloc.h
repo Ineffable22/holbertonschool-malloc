@@ -9,6 +9,11 @@
 
 #define ALIGNMENT(size) (size + (8 - (size % 8)))
 
+/**
+ * struct block_s - struct block
+ * @start: start address
+ * @used: Flag to indicate if the block is allocated
+ */
 typedef struct block_s
 {
 	void           *start;

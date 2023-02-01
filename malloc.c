@@ -28,10 +28,10 @@ void *first_time(ssize_t *page)
 
 /**
  * new_block - Allocate new pages on the heap
- * @ptr: Pointer to allocated page
- * @len: Number of pointers
+ * @ptr:   Pointer to allocated page
+ * @len:   Number of pointers
  * @block: size of block to allocate
- * @page: Value of page
+ * @page:  Value of page
  *
  * Return: Pointer to allocated page
  */

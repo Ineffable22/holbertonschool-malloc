@@ -8,6 +8,6 @@
  */
 void _free(void *ptr)
 {
-	if (ptr)
+	if (ptr && len != 0)
 		((block_t *)((char *)ptr - sizeof(size_t) - sizeof(block_t)))->used = 0;
 }

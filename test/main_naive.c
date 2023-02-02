@@ -15,20 +15,15 @@ int str_test(void)
 	for (i = 0; i < 10; i++)
 	{
 		void *chunk;
-		block_t *block;
-
-		str = _malloc(10);
+		str = naive_malloc(10);
 		if (str == NULL)
 			return (EXIT_FAILURE);
 		strcpy(str, "Holberton");
 		str[9] = '\0';
 		printf("%p: %s, ", (void *)str, str);
 		chunk = (void *)(str - sizeof(size_t));
-		block = (block_t *)(str - sizeof(size_t) - sizeof(block_t));
 		printf("chunk addr: %p, ", (void *)chunk);
 		printf("size: %lu, ", *((size_t *)chunk));
-		printf("start: %p, ", block->start);
-		printf("used: %d, ", block->used);
 		printf("break: %p\n", sbrk(0));
 	}
 	printf("Final break is %p\n\n", sbrk(0));
@@ -51,7 +46,7 @@ int int_test(void)
 	{
 		void *chunk;
 
-		num = _malloc(10);
+		num = naive_malloc(10);
 		if (num == NULL)
 			return (EXIT_FAILURE);
 		for (j = 0; j < 10; j++)

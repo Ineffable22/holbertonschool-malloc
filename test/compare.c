@@ -37,7 +37,7 @@ int str_test(void)
 
 	printf("==========String allocation test==========\n");
 	printf("Starting break is %p\n", sbrk(0));
-	for (i = 0; i < 10000; i++)
+	for (i = 0; i < 100; i++)
 	{
 		str1 = _malloc(i);
 		if (str1 == NULL)
@@ -54,6 +54,9 @@ int str_test(void)
 			printf("i => %d\n", i);
 			printf("size1: %lu\n", *((size_t *)chunk1));
 			printf("size2: %lu\n", *((size_t *)chunk2));
+			pmem(str1 - 0x10, 0x10);
+			pmem(str2 - 0x10, 0x10);
+			putchar('\n');
 		}
 		_free(str1);
 		_free(str2);

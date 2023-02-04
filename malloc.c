@@ -74,10 +74,15 @@ void *new_block(void *ptr, size_t block, ssize_t page)
 void *_malloc(size_t size)
 {
 	void *ptr;
-	size_t block = ALIGNMENT(size) + 0x10;
+	size_t block = ALIGNMENT(size) + METADATA;
 	size_t i, block_size, flag = 0;
 	ssize_t page = 0;
 
+	if ((ssize_t)size < 0)
+	{
+		fprintf(stderr, "Can not allocate negative memory\n");
+		return (NULL);
+	}
 	/* Find the starting address */
 	if (!FIRST_CHUNK)
 	{
@@ -85,7 +90,6 @@ void *_malloc(size_t size)
 		if (!FIRST_CHUNK)
 			return (NULL);
 	}
-
 	/* Find final or empty(freed) adrress */
 	ptr = FIRST_CHUNK;
 	for (i = 0; i < LEN; i++)
@@ -99,16 +103,14 @@ void *_malloc(size_t size)
 		}
 		ptr = (char *)ptr + block_size;
 	}
-
 	/* New block if no previous free block is found */
 	if (!flag)
 		ptr = new_block(ptr, block, page);
-
 	/* Assign 0 to the previous block size */
 	*(size_t *)ptr = 0;
 	/* Indicates with a bit that this block is being used */
 	(*(size_t *)((char *)ptr + 0x8))++;
 	/* block Length */
 	LEN++;
-	return ((char *)ptr + 0x10);
+	return ((char *)ptr + METADATA);
 }

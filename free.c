@@ -8,6 +8,12 @@
  */
 void _free(void *ptr)
 {
-	if (ptr && len != 0)
-		((block_t *)((char *)ptr - sizeof(size_t) - sizeof(block_t)))->used = 0;
+	void *size = 0;
+
+	if (ptr)
+	{
+		size = (char *)ptr - (METADATA / 2);
+		(*(size_t *)size)--;
+		*(size_t *)((char *)size - (METADATA / 2)) = (*(size_t *)size);
+	}
 }

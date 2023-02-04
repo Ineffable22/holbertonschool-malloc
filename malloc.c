@@ -9,21 +9,19 @@
  */
 void *first_time(ssize_t *page)
 {
-	void *first_chunk;
-
 	(*page) = sysconf(_SC_PAGESIZE);
 	if ((*page) == -1)
 	{
 		fprintf(stderr, "first_time: sysconf error");
 		return (NULL);
 	}
-	first_chunk = sbrk((*page));
-	if (first_chunk == (void *)-1)
+	FIRST_CHUNK = sbrk((*page));
+	if (FIRST_CHUNK == (void *)-1)
 	{
 		perror("first_time: sbrk error");
 		return (NULL);
 	}
-	return (first_chunk);
+	return (FIRST_CHUNK);
 }
 
 /**
@@ -39,8 +37,13 @@ void *new_block(void *ptr, size_t block, ssize_t page)
 	void *next_block;
 	size_t tmp = 0;
 
-	tmp = len ? *(size_t *)ptr : (size_t)page;
-	next_block = ((char *)ptr) + block;
+	/* Page value for the first time, otherwise the rest of the page */
+	tmp = LEN ? *(size_t *)ptr : (size_t)page;
+
+	/* Assigns the rest of the page value in the next block */
+	next_block = ((char *)ptr + block);
+	*(size_t *)next_block = tmp - block;
+
 	while (tmp < block)
 	{
 		page = sysconf(_SC_PAGESIZE);
@@ -56,11 +59,11 @@ void *new_block(void *ptr, size_t block, ssize_t page)
 		}
 		tmp += page;
 	}
-	*(size_t *)next_block = tmp - block;
-	*(size_t *)((char *)ptr + sizeof(block_t)) = block;
+
+	/* Assigns the current block size */
+	*(size_t *)((char *)ptr + 0x8) = block;
 	return (ptr);
 }
-
 
 /**
  * _malloc - Allocate enough memory to store
@@ -72,35 +75,41 @@ void *new_block(void *ptr, size_t block, ssize_t page)
 void *_malloc(size_t size)
 {
 	void *ptr;
-	block_t *tmp_block;
-	size_t block = ALIGNMENT(size) + sizeof(block_t) + sizeof(size);
+	size_t block = ALIGNMENT(size) + 0x10;
 	size_t i, block_size, flag = 0;
 	ssize_t page = 0;
 
-	/* Find address */
-	if (len == 0)
+	/* Find the starting address */
+	if (!FIRST_CHUNK)
 	{
-		first_chunk = first_time(&page);
-		if (!first_chunk)
+		FIRST_CHUNK = first_time(&page);
+		if (!FIRST_CHUNK)
 			return (NULL);
 	}
 
-	for (ptr = first_chunk, i = 0; i < len; i++)
+	/* Find final or empty(freed) adrress */
+	ptr = FIRST_CHUNK;
+	for (i = 0; i < LEN; i++)
 	{
-		block_size = *(size_t *)((char *)ptr + sizeof(block_t));
-		tmp_block = (block_t *)ptr;
-		if (tmp_block->used == 0 && block_size <= block)
+		block_size = *(size_t *)((char *)ptr + 0x8) - 1;
+		/* Validate if Block is freed */
+		if (!(block_size | 0))
 		{
 			flag = 1;
 			break;
 		}
 		ptr = (char *)ptr + block_size;
 	}
+
+	/* New block if no previous free block is found */
 	if (!flag)
 		ptr = new_block(ptr, block, page);
-	tmp_block = (block_t *)ptr;
-	tmp_block->start = first_chunk;
-	tmp_block->used = 1;
-	len++;
-	return ((char *)ptr + sizeof(size) + sizeof(block_t));
+
+	/* Assign 0 to the previous block size */
+	*(size_t *)ptr = 0;
+	/* Indicates with a bit that this block is being used */
+	(*(size_t *)((char *)ptr + 0x8))++;
+	/* block Length */
+	LEN++;
+	return ((char *)ptr + 0x10);
 }

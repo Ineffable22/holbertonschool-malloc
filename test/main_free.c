@@ -1,36 +1,64 @@
 #include "malloc.h"
 
+/**
+ * pmem - print mem
+ * @p: memory address to start printing from
+ * @bytes: number of bytes to print
+ *
+ * Return: nothing
+ */
+void pmem(void *p, unsigned int bytes)
+{
+	unsigned char *ptr;
+	unsigned int i;
+
+	ptr = (unsigned char *)p;
+	for (i = 0; i < bytes; i++)
+	{
+		if (i != 0)
+		{
+			printf(" ");
+		}
+		printf("%02x", *(ptr + i));
+	}
+	printf("\n");
+}
+
+/**
+ * main - updating with correct checks
+ *
+ * Return: EXIT_FAILURE if something failed. Otherwise EXIT_SUCCESS
+ */
 int main(void)
 {
-	char *str, *tmp_p, *to_free;
+	void *p;
 	int i;
-	size_t block_size;
-	void *ptr;
-	block_t *block, *tmp_block;
+	size_t size_of_the_chunk;
+	size_t size_of_the_previous_chunk;
+	void *chunks[10];
+	char prev_used;
 
-	printf("==========Free deallocation test==========\n");
-	printf("Starting break is %p\n", sbrk(0));
 	for (i = 0; i < 10; i++)
 	{
-		str = _malloc(10);
-		if (str == NULL)
-			return (EXIT_FAILURE);
-		strcpy(str, "Holberton");
-		str[9] = '\0';
-		if (i == 5)
-			to_free = str;
-		block = (block_t *)(str - sizeof(size_t) - sizeof(block_t));
+		p = _malloc(1024 * (i + 1));
+		chunks[i] = (void *)((char *)p - 0x10);
 	}
-	_free(to_free);
-	ptr = block->start;
+	_free((char *)(chunks[3]) + 0x10);
+	_free((char *)(chunks[7]) + 0x10);
+	_free(NULL);
+
 	for (i = 0; i < 10; i++)
 	{
-		tmp_block = (block_t *)((char *)ptr);
-		tmp_p = (char *)((char *)ptr + sizeof(size_t) + sizeof(block_t));
-		printf("str: %s | used => %d\n", tmp_p, tmp_block->used);
-		block_size = *(size_t *)((char *)ptr + sizeof(block_t));
-		ptr = (char *)ptr + block_size;
+		p = chunks[i];
+		printf("chunks[%d]: ", i);
+		pmem(p, 0x10);
+		size_of_the_chunk = *((size_t *)((char *)p + 8));
+		prev_used = size_of_the_chunk & 1;
+		size_of_the_chunk -= prev_used;
+		size_of_the_previous_chunk = *((size_t *)((char *)p));
+		printf("chunks[%d]: %p, size = %li, prev (%s) = %li\n",
+		       i, p, size_of_the_chunk,
+		       (prev_used ? "allocated" : "unallocated"), size_of_the_previous_chunk);
 	}
-	printf("Final break is %p\n\n", sbrk(0));
 	return (EXIT_SUCCESS);
 }

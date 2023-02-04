@@ -1,35 +1,71 @@
 #include "malloc.h"
 
 /**
+ * pmem - print mem
+ * @p: memory address to start printing from
+ * @bytes: number of bytes to print
+ *
+ * Return: nothing
+ */
+void pmem(void *p, unsigned int bytes)
+{
+	unsigned char *ptr;
+	unsigned int i;
+
+	ptr = (unsigned char *)p;
+	for (i = 0; i < bytes; i++)
+	{
+		if (i != 0)
+		{
+			printf(" ");
+		}
+		printf("%02x", *(ptr + i));
+	}
+	printf("\n");
+}
+
+/**
  * str_test - Test the memory allocation with pointer to char type
  *
  * Return: EXIT_SUCCESS or EXIT_FAILURE
  */
 int str_test(void)
 {
-	char *str;
+	char *str, *text = "Holberton";
 	int i;
+	size_t size_of_the_chunk;
+	size_t size_of_the_previous_chunk;
+	void *chunks[10], *chunk;
+	char prev_used;
+	void *p;
 
 	printf("==========String allocation test==========\n");
 	printf("Starting break is %p\n", sbrk(0));
 	for (i = 0; i < 10; i++)
 	{
-		void *chunk;
-		block_t *block;
-
 		str = _malloc(10);
+		chunks[i] = (void *)((char *)str - 0x10);
 		if (str == NULL)
 			return (EXIT_FAILURE);
-		strcpy(str, "Holberton");
-		str[9] = '\0';
+		strcpy(str, text);
 		printf("%p: %s, ", (void *)str, str);
 		chunk = (void *)(str - sizeof(size_t));
-		block = (block_t *)(str - sizeof(size_t) - sizeof(block_t));
 		printf("chunk addr: %p, ", (void *)chunk);
 		printf("size: %lu, ", *((size_t *)chunk));
-		printf("start: %p, ", block->start);
-		printf("used: %d, ", block->used);
 		printf("break: %p\n", sbrk(0));
+	}
+	for (i = 0; i < 10; i++)
+	{
+		p = chunks[i];
+		printf("chunks[%d]: ", i);
+		pmem(p, 0x10);
+		size_of_the_chunk = *((size_t *)((char *)p + 0x8));
+		prev_used = size_of_the_chunk & 1;
+		size_of_the_chunk -= prev_used;
+		size_of_the_previous_chunk = *((size_t *)((char *)p));
+		printf("chunks[%d]: %p, size = %li, prev (%s) = %li\n",
+		       i, p, size_of_the_chunk,
+		       (prev_used ? "allocated" : "unallocated"), size_of_the_previous_chunk);
 	}
 	printf("Final break is %p\n\n", sbrk(0));
 	return (EXIT_SUCCESS);

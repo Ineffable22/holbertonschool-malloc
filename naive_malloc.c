@@ -8,7 +8,7 @@
  */
 void *first_time(ssize_t *page)
 {
-	void *first_chunk;
+	void *f_chunk;
 
 	(*page) = sysconf(_SC_PAGESIZE);
 	if ((*page) == -1)
@@ -16,13 +16,13 @@ void *first_time(ssize_t *page)
 		fprintf(stderr, "first_time: sysconf error");
 		return (NULL);
 	}
-	first_chunk = sbrk((*page));
-	if (first_chunk == (void *)-1)
+	f_chunk = sbrk((*page));
+	if (f_chunk == (void *)-1)
 	{
 		perror("first_time: sbrk error");
 		return (NULL);
 	}
-	return (first_chunk);
+	return (f_chunk);
 }
 
 /**
@@ -34,24 +34,24 @@ void *first_time(ssize_t *page)
  */
 void *naive_malloc(size_t size)
 {
-	static void *first_chunk;
-	static size_t len;
+	static void *f_chunk;
+	static size_t length;
 	void *ptr, *next_block = NULL;
 	size_t block = ALIGNMENT(size) + sizeof(size), i, block_size, tmp;
 	ssize_t page;
 
-	if (!len)
+	if (!length)
 	{
-		first_chunk = first_time(&page);
-		if (!first_chunk)
+		f_chunk = first_time(&page);
+		if (!f_chunk)
 			return (NULL);
 	}
-	for (i = 0, ptr = first_chunk; i < len; i++)
+	for (i = 0, ptr = f_chunk; i < length; i++)
 	{
 		block_size = *(size_t *)ptr;
 		ptr = (char *)ptr + block_size;
 	}
-	tmp = len ? *(size_t *)ptr : (size_t)page;
+	tmp = length ? *(size_t *)ptr : (size_t)page;
 	next_block = ((char *)ptr) + block;
 	while (tmp < (sizeof(size) * 2) + ALIGNMENT(size))
 	{
@@ -70,6 +70,6 @@ void *naive_malloc(size_t size)
 	}
 	*(size_t *)next_block = tmp - block;
 	*(size_t *)ptr = block;
-	len++;
+	length++;
 	return ((char *)ptr + sizeof(size));
 }

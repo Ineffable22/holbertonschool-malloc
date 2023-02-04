@@ -6,7 +6,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define ALIGNMENT(size) (size + (8 - (size % 8)))
+#define METADATA 0x10
+#define ALIGNMENT(size) (size + (METADATA - (size % METADATA)))
 #define MIN(x, y) (y ^ ((x ^ y) & -(x < y)))
 
 void *FIRST_CHUNK;

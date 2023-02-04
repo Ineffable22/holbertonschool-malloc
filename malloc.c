@@ -91,9 +91,9 @@ void *_malloc(size_t size)
 	ptr = FIRST_CHUNK;
 	for (i = 0; i < LEN; i++)
 	{
-		block_size = *(size_t *)((char *)ptr + 0x8) - 1;
+		block_size = (*(size_t *)((char *)ptr + 0x8)) - 1;
 		/* Validate if Block is freed */
-		if (!(block_size | 0))
+		if (!(block_size | 0) && block_size <= block)
 		{
 			flag = 1;
 			break;

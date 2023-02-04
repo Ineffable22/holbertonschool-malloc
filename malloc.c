@@ -60,7 +60,7 @@ void *new_block(void *ptr, size_t block, ssize_t page)
 	*(size_t *)next_block = tmp - block;
 
 	/* Assigns the current block size */
-	*(size_t *)((char *)ptr + 0x8) = block;
+	*(size_t *)((char *)ptr + 0x8) = block - METADATA;
 	return (ptr);
 }
 

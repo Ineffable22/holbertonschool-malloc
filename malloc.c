@@ -1,5 +1,9 @@
 #include "malloc.h"
 
+void  *FIRST_CHUNK;
+size_t LEN;
+size_t AVAILABLE;
+
 /**
  * first_time - Create the page and initialize memory and point
  * to the start address

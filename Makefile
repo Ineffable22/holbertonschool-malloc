@@ -11,6 +11,11 @@ malloc:
 	./a.out
 	rm a.out
 
+malloc2:
+	$(CC) $(CFLAGS) malloc.c test/compare.c free.c 
+	./a.out
+	rm a.out
+
 free:
 	$(CC) $(CFLAGS) malloc.c free.c test/main_free.c
 	./a.out

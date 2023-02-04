@@ -9,19 +9,8 @@
 #define ALIGNMENT(size) (size + (8 - (size % 8)))
 #define MIN(x, y) (y ^ ((x ^ y) & -(x < y)))
 
-/**
- * struct block_s - struct block
- * @start: start address
- * @used: Flag to indicate if the block is allocated
- */
-typedef struct block_s
-{
-	void           *start;
-	char           used;
-} block_t;
-
-void *first_chunk;
-size_t len;
+void *FIRST_CHUNK;
+size_t LEN;
 
 /* ----- naive_malloc.c ----- */
 void *naive_malloc(size_t size);

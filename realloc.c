@@ -12,16 +12,16 @@ void *_realloc(void *ptr, size_t size)
 	char *new_ptr = NULL;
 	size_t old_size = 0;
 
-	if (ptr == NULL || len == 0)
+	if (!ptr)
 		return (_malloc(size));
-	old_size = *(size_t *)((char *)ptr + sizeof(block_t));
 	if (size == 0)
 	{
 		_free(ptr);
 		return (NULL);
 	}
+	old_size = *(size_t *)((char *)ptr - sizeof(size_t));
 
-	if (old_size == ALIGNMENT(size) + sizeof(block_t) + sizeof(size_t))
+	if (old_size == ALIGNMENT(size) + METADATA)
 		return (ptr);
 
 	new_ptr = _malloc(size);

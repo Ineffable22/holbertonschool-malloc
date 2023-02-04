@@ -1,6 +1,32 @@
 #include "malloc.h"
 
 /**
+ * checker - Check if pointers are equal
+ * @chunk1: Pointer to chunk of my own malloc
+ * @chunk2: Pointer to chunk of real malloc
+ * @str1: Pointer to metadata of my own malloc
+ * @str2: Pointer to metadata of real malloc
+ *
+ * Return: 1 if successful, 0 otherwise
+ */
+int checker(void *chunk1, void *chunk2, char *str1, char *str2)
+{
+	unsigned char *ptr1 = (unsigned char *)str1;
+	unsigned char *ptr2 = (unsigned char *)str2;
+	unsigned int i;
+
+	if (*((size_t *)chunk1) != *((size_t *)chunk2))
+		return (1);
+
+	for (i = 0; i < METADATA; i++)
+	{
+		if (*(ptr1 + i) != *(ptr2 + i))
+			return (1);
+	}
+	return (0);
+}
+
+/**
  * pmem - print mem
  * @p: memory address to start printing from
  * @bytes: number of bytes to print
@@ -49,7 +75,7 @@ int str_test(void)
 			return (EXIT_FAILURE);
 		strcpy(str2, text);
 		chunk2 = (void *)(str2 - sizeof(size_t));
-		if (*((size_t *)chunk1) != *((size_t *)chunk2))
+		if (checker(chunk1, chunk2, str1 - 0x10, str2 - 0x10))
 		{
 			printf("i => %d\n", i);
 			printf("size1: %lu\n", *((size_t *)chunk1));
@@ -64,16 +90,17 @@ int str_test(void)
 	printf("Final break is %p\n\n", sbrk(0));
 	return (EXIT_SUCCESS);
 }
-/**
+/*
  * Range 16-24	My result => 49		malloc result => 33
  * Range 32-40	My result => 65		malloc result => 49
  * Range 40-56	My result => 81		malloc result => 65
  * Range 64-72	My result => 97		malloc result => 81
  * Range 80-88	My result => 113	malloc result => 97
- * pattern match => 
+ * pattern match =>
  * if (size % 0x10 <= 8 && size > 0xF)
- * 		block = (size + ((8 - (size % 0x10)) + 8));
+ *         block = (size + ((8 - (size % 0x10)) + 8));
  */
+
 /**
  * main - main program to test the memory allocation
  *

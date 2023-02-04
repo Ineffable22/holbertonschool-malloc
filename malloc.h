@@ -10,8 +10,9 @@
 #define ALIGNMENT(size) (size + (METADATA - (size % METADATA)))
 #define MIN(x, y) (y ^ ((x ^ y) & -(x < y)))
 
-void *FIRST_CHUNK;
+void  *FIRST_CHUNK;
 size_t LEN;
+size_t AVAILABLE;
 
 /* ----- naive_malloc.c ----- */
 void *naive_malloc(size_t size);

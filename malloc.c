@@ -40,10 +40,7 @@ void *new_block(void *ptr, size_t block, ssize_t page)
 	/* Page value for the first time, otherwise the rest of the page */
 	tmp = LEN ? *(size_t *)ptr : (size_t)page;
 
-	/* Assigns the rest of the page value in the next block */
 	next_block = ((char *)ptr + block);
-	*(size_t *)next_block = tmp - block;
-
 	while (tmp < block)
 	{
 		page = sysconf(_SC_PAGESIZE);
@@ -59,6 +56,8 @@ void *new_block(void *ptr, size_t block, ssize_t page)
 		}
 		tmp += page;
 	}
+	/* Assigns the rest of the page value in the next block */
+	*(size_t *)next_block = tmp - block;
 
 	/* Assigns the current block size */
 	*(size_t *)((char *)ptr + 0x8) = block;

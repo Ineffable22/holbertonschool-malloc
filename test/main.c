@@ -54,6 +54,7 @@ int str_test(void)
 		printf("size: %lu, ", *((size_t *)chunk));
 		printf("break: %p\n", sbrk(0));
 	}
+
 	for (i = 0; i < 10; i++)
 	{
 		p = chunks[i];

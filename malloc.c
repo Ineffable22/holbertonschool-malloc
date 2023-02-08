@@ -108,11 +108,11 @@ void *_malloc(size_t size)
 	{
 		block_size = (*(size_t *)((char *)ptr + 0x8)) - 1;
 		/* Validate if Block is freed */
-		if (!(block_size | 0) && block_size <= block)
-		{
-			flag = 1;
-			break;
-		}
+		/* if (!(block_size | 0) && block_size <= block) */
+		/* { */
+		/*	flag = 1; */
+		/*	break; */
+		/* } */
 		ptr = (char *)ptr + block_size;
 	}
 	/* New block if no previous free block is found */

@@ -57,18 +57,18 @@ void *new_block(void *ptr, size_t block, size_t size, ssize_t page)
 	}
 	while (tmp + new_page < block)
 		new_page += (size_t)page;
-
-	if (sbrk(new_page) == (void *)-1)
+	tmp += new_page;
+	if (sbrk(tmp) == (void *)-1)
 	{
 		fprintf(stderr, "Line %d | %s: sbrk error\n", __LINE__, __func__);
 		return (NULL);
 	}
 	/* Assigns the rest of the page value in the next block */
-	AVAILABLE = tmp + new_page - block;
+	AVAILABLE = tmp - block;
 
 	/* Pattern found, more information in "test/compare.c" */
-	if (size % 0x10 <= 8 && size > 0xF)
-		block = (size + ((8 - (size % 0x10)) + 8));
+	/* if (size % 0x10 <= 8 && size > 0xF) */
+	/*	block = (size + ((8 - (size % 0x10)) + 8)); */
 
 	/* Assigns the current block size */
 	*(size_t *)((char *)ptr + 0x8) = block;

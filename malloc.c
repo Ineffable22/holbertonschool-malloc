@@ -92,7 +92,7 @@ void *_malloc(size_t size)
 {
 	void *ptr = NULL;
 	size_t block = ALIGNMENT(size) + METADATA;
-	size_t i = 0, block_size = 0, flag = 0;
+	size_t i = 0, block_size = 0, prev_size = 0, flag = 0;
 	ssize_t page = 0;
 
 	if ((ssize_t)size < 0)
@@ -107,27 +107,27 @@ void *_malloc(size_t size)
 		if (!FIRST_CHUNK)
 			return (NULL);
 	}
-	/* Find final or empty(freed) adrress */
-	ptr = FIRST_CHUNK;
+	ptr = FIRST_CHUNK; /* Find final or empty(freed) adrress */
 	for (i = 0; i < LEN; i++)
 	{
-		block_size = (*(size_t *)((char *)ptr + 0x8)) - 1;
+		prev_size = *(size_t *)(ptr);
+		block_size = prev_size ?
+			(*(size_t *)((char *)ptr + 0x9)) - 1
+			: (*(size_t *)((char *)ptr + 0x8)) - 1;
 		/* Validate if Block is freed */
-		/* if (!(block_size | 0) && block_size <= block) */
-		/* { */
-		/*	flag = 1; */
-		/*	break; */
-		/* } */
+		if (prev_size && !(block_size | 0) && prev_size >= block)
+		{
+			*(size_t *)ptr = 0; /* Assign 0 to the previous block size */
+			(*(size_t *)((char *)ptr + 0x8))++;
+			ptr = (char *)ptr - (prev_size + 1), flag = 1;
+			break;
+		}
 		ptr = (char *)ptr + block_size;
 	}
-	/* New block if no previous free block is found */
-	if (!flag)
+	if (!flag) /* New block if no previous free block is found */
 		ptr = new_block(ptr, block, size, page);
-	/* Assign 0 to the previous block size */
-	*(size_t *)ptr = 0;
 	/* Indicates with a bit that this block is being used */
 	(*(size_t *)((char *)ptr + 0x8))++;
-	/* block Length */
-	LEN++;
+	LEN++; /* block Length */
 	return ((char *)ptr + METADATA);
 }

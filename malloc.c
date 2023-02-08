@@ -56,12 +56,17 @@ void *new_block(void *ptr, size_t block, size_t size, ssize_t page)
 		return (NULL);
 	}
 	while (tmp + new_page < block)
-		new_page += (size_t)page;
-	tmp += new_page;
-	if (sbrk(tmp) == (void *)-1)
 	{
-		fprintf(stderr, "Line %d | %s: sbrk error\n", __LINE__, __func__);
-		return (NULL);
+		new_page += (size_t)page;
+	}
+	tmp += new_page;
+	if (new_page)
+	{
+		if (sbrk(tmp) == (void *)-1)
+		{
+			fprintf(stderr, "Line %d | %s: sbrk error\n", __LINE__, __func__);
+			return (NULL);
+		}
 	}
 	/* Assigns the rest of the page value in the next block */
 	AVAILABLE = tmp - block;

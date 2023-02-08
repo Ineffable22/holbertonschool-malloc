@@ -8,7 +8,7 @@
 
 #define METADATA 0x10
 #define ALIGNMENT(size) (size + (METADATA - (size % METADATA)))
-#define MIN(x, y) (y ^ ((x ^ y) & -(x < y)))
+#define _MIN(x, y) (y ^ ((x ^ y) & -(x < y)))
 
 /* ----- naive_malloc.c ----- */
 void *naive_malloc(size_t size);

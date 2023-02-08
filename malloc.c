@@ -67,6 +67,7 @@ void *new_block(void *ptr, size_t block, size_t size, ssize_t page)
 	AVAILABLE = tmp - block;
 
 	/* Pattern found, more information in "test/compare.c" */
+	(void) size;
 	/* if (size % 0x10 <= 8 && size > 0xF) */
 	/*	block = (size + ((8 - (size % 0x10)) + 8)); */
 

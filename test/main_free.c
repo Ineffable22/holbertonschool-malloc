@@ -60,5 +60,23 @@ int main(void)
 		       i, p, size_of_the_chunk,
 		       (prev_used ? "allocated" : "unallocated"), size_of_the_previous_chunk);
 	}
+	putchar(0xA);
+	p = _malloc(2032);
+	p = _malloc(2032);
+
+	p = chunks[0];
+	for (i = 0; i < 11; i++)
+	{
+		printf("chunks[%d]: ", i);
+		pmem(p, 0x10);
+		size_of_the_chunk = *((size_t *)((char *)p + 8));
+		prev_used = size_of_the_chunk & 1;
+		size_of_the_chunk -= prev_used;
+		size_of_the_previous_chunk = *((size_t *)((char *)p));
+		printf("chunks[%d]: %p, size = %li, prev (%s) = %li\n",
+		       i, p, size_of_the_chunk,
+		       (prev_used ? "allocated" : "unallocated"), size_of_the_previous_chunk);
+		p = (char *)p + size_of_the_chunk;
+	}
 	return (EXIT_SUCCESS);
 }

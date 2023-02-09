@@ -82,6 +82,44 @@ void *new_block(void *ptr, size_t block, size_t size, ssize_t page)
 }
 
 /**
+ * restructure_block - Restructures the block if it was freed
+ * @ptr:       Pointer to the current block
+ * @block:     block size to allocate
+ * @prev_used: previous block size
+ *
+ * Return: Nothing
+ */
+void restructure_block(void *ptr, size_t block, size_t prev_used)
+{
+	size_t new_size = prev_used - block;
+	void *prev_block = ((char *)ptr - prev_used);
+	void *next_block = ((char *)prev_block + block);
+
+	printf("A\n");
+	/* Assign value to the previous block size */
+	*(size_t *)ptr = new_size;
+
+	/* Assign 0 in the previous block size of prev_block*/
+	*(size_t *)prev_block = 0;
+	if (new_size <= METADATA)
+	{
+		printf("B\n");
+		/* Assign block size */
+		*(size_t *)((char *)prev_block + 0x8) = prev_used;
+	}
+	else
+	{
+		printf("C\n");
+		/* Assign block size */
+		*(size_t *)((char *)prev_block + 0x8) = block + 1;
+
+		/* Assign size in remaining block */
+		(*(size_t *)next_block) = 0;
+		(*(size_t *)((char *)next_block + 0x8)) = new_size;
+	}
+}
+
+/**
  * _malloc - Allocate enough memory to store
  * @size: Is the size needed to be allocated for the user
  *
@@ -92,7 +130,7 @@ void *_malloc(size_t size)
 {
 	void *ptr = NULL;
 	size_t block = ALIGNMENT(size) + METADATA;
-	size_t i = 0, block_size = 0, prev_size = 0, flag = 0;
+	size_t i = 0, block_size = 0, prev_size = 0, used = 0;
 	ssize_t page = 0;
 
 	if ((ssize_t)size < 0)
@@ -111,23 +149,23 @@ void *_malloc(size_t size)
 	for (i = 0; i < LEN; i++)
 	{
 		prev_size = *(size_t *)(ptr);
-		block_size = prev_size ?
-			(*(size_t *)((char *)ptr + 0x9)) - 1
-			: (*(size_t *)((char *)ptr + 0x8)) - 1;
+		block_size = (*(size_t *)((char *)ptr + 0x8)) - 1 + (prev_size ? 1 : 0);
+		used = (block_size & 1);
+		block_size = ((!prev_size && used) ? block_size + 1 : block_size);
 		/* Validate if Block is freed */
-		if (prev_size && !(block_size | 0) && prev_size >= block)
+		if (prev_size && !used && prev_size >= block)
 		{
-			*(size_t *)ptr = 0; /* Assign 0 to the previous block size */
-			(*(size_t *)((char *)ptr + 0x8))++;
-			ptr = (char *)ptr - (prev_size + 1), flag = 1;
+			restructure_block(ptr, block, prev_size);
 			break;
 		}
 		ptr = (char *)ptr + block_size;
 	}
-	if (!flag) /* New block if no previous free block is found */
+	if (!prev_size) /* New block if no previous free block is found */
+	{
 		ptr = new_block(ptr, block, size, page);
-	/* Indicates with a bit that this block is being used */
-	(*(size_t *)((char *)ptr + 0x8))++;
+		/* Indicates with a bit that this block is being used */
+		(*(size_t *)((char *)ptr + 0x8))++;
+	}
 	LEN++; /* block Length */
 	return ((char *)ptr + METADATA);
 }

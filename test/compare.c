@@ -84,8 +84,6 @@ int str_test(void)
 			pmem(str2 - 0x10, 0x10);
 			putchar('\n');
 		}
-		_free(str1);
-		_free(str2);
 	}
 	printf("Final break is %p\n\n", sbrk(0));
 	return (EXIT_SUCCESS);

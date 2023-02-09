@@ -95,7 +95,6 @@ void restructure_block(void *ptr, size_t block, size_t prev_used)
 	void *prev_block = ((char *)ptr - prev_used);
 	void *next_block = ((char *)prev_block + block);
 
-	printf("A\n");
 	/* Assign value to the previous block size */
 	*(size_t *)ptr = new_size;
 
@@ -103,13 +102,11 @@ void restructure_block(void *ptr, size_t block, size_t prev_used)
 	*(size_t *)prev_block = 0;
 	if (new_size <= METADATA)
 	{
-		printf("B\n");
 		/* Assign block size */
 		*(size_t *)((char *)prev_block + 0x8) = prev_used;
 	}
 	else
 	{
-		printf("C\n");
 		/* Assign block size */
 		*(size_t *)((char *)prev_block + 0x8) = block + 1;
 

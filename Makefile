@@ -46,5 +46,10 @@ realloc:
 	./a.out
 	rm a.out
 
+realloc2:
+	$(CC) $(CFLAGS) malloc.c free.c calloc.c realloc.c test/main_realloc2.c
+	./a.out
+	rm a.out
+
 betty:
 	betty *.c *.h

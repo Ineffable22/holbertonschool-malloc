@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -pedantic -I./
+CFLAGS = -Wall -Wextra -Werror -pedantic -pthread -I./
 
 naive_malloc:
 	$(CC) $(CFLAGS) naive_malloc.c test/main_naive.c
@@ -48,6 +48,11 @@ realloc:
 
 realloc2:
 	$(CC) $(CFLAGS) malloc.c free.c calloc.c realloc.c test/main_realloc2.c
+	./a.out
+	rm a.out
+
+multithread:
+	$(CC) $(CFLAGS) malloc.c free.c calloc.c realloc.c test/multithreading.c
 	./a.out
 	rm a.out
 

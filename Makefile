@@ -31,6 +31,11 @@ free2:
 	./a.out
 	rm a.out
 
+free3:
+	$(CC) $(CFLAGS) malloc.c free.c test/main_free3.c
+	./a.out
+	rm a.out
+
 calloc:
 	$(CC) $(CFLAGS) malloc.c free.c calloc.c test/main_calloc.c
 	./a.out

@@ -21,7 +21,7 @@ void *_realloc(void *ptr, size_t size)
 	}
 	old_size = *(size_t *)((char *)ptr - sizeof(size_t));
 
-	if (old_size == ALIGNMENT(size) + METADATA)
+	if (old_size - 1 == ALIGNMENT(size) + METADATA)
 		return (ptr);
 
 	new_ptr = _malloc(size);

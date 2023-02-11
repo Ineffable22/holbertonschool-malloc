@@ -1,7 +1,7 @@
 #include "malloc.h"
 
-#define ALLOC_SIZE 100000
-#define ALLOC_NB 1000
+#define ALLOC_SIZE 10
+#define ALLOC_NB 26
 
 /**
  * pmem - print mem
@@ -49,7 +49,7 @@ int main(void)
 			fprintf(stderr, "Address is not correctly aligned\n");
 			return (EXIT_FAILURE);
 		}
-		memset((char *)ptr[i] + 0x10, 'H', ALLOC_SIZE);
+		memset((char *)ptr[i] + 0x10, 65 + i, ALLOC_SIZE);
 	}
 
 	/* Make sure that allocated chunks are left intact */
@@ -61,6 +61,7 @@ int main(void)
 
 	for (i = 0; i < ALLOC_NB; i++)
 	{
+		printf("%s\n", (char *)ptr[i] + 0x10);
 		printf("chunks[%d]: ", i);
 		pmem(ptr[i], 0x10);
 		size_of_the_chunk = *((size_t *)((char *)ptr[i] + 8));
@@ -82,11 +83,12 @@ int main(void)
 			fprintf(stderr, "Address is not correctly aligned\n");
 			return (EXIT_FAILURE);
 		}
-		memset((char *)ptr[i] + 0x10, 'H', ALLOC_SIZE);
+		memset((char *)ptr[i] + 0x10, 65 + i, ALLOC_SIZE);
 	}
 
 	for (i = 0; i < ALLOC_NB; i++)
 	{
+		printf("%s\n", (char *)ptr[i] + 0x10);
 		printf("chunks[%d]: ", i);
 		pmem(ptr[i], 0x10);
 		size_of_the_chunk = *((size_t *)((char *)ptr[i] + 8));

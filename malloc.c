@@ -89,14 +89,14 @@ void *new_block(void *ptr, size_t block, size_t size, ssize_t page)
  *
  * Return: Nothing
  */
-void restructure_block(void *ptr, size_t block, size_t prev_used)
+void restructure_block(void **ptr, size_t block, size_t prev_used)
 {
 	size_t new_size = prev_used - block;
-	void *prev_block = ((char *)ptr - prev_used);
+	void *prev_block = ((char *)(*ptr) - prev_used);
 	void *next_block = ((char *)prev_block + block);
 
 	/* Assign value to the previous block size */
-	*(size_t *)ptr = new_size;
+	*(size_t *)(*ptr) = new_size;
 
 	/* Assign 0 in the previous block size of prev_block*/
 	*(size_t *)prev_block = 0;
@@ -114,6 +114,7 @@ void restructure_block(void *ptr, size_t block, size_t prev_used)
 		(*(size_t *)next_block) = 0;
 		(*(size_t *)((char *)next_block + 0x8)) = new_size;
 	}
+	(*ptr) = ((char *)(*ptr) - prev_used);
 }
 
 /**
@@ -152,7 +153,7 @@ void *_malloc(size_t size)
 		/* Validate if Block is freed */
 		if (prev_size && !used && prev_size >= block)
 		{
-			restructure_block(ptr, block, prev_size);
+			restructure_block(&ptr, block, prev_size);
 			break;
 		}
 		ptr = (char *)ptr + block_size;
